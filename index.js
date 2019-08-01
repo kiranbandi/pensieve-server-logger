@@ -2,6 +2,7 @@ const recordService = require('./records/record.service');
 const winston = require('./helpers/winston');
 var app = require('express')();
 var https = require('https');
+var fs = require('fs');
 
 var server = https.createServer({
     key: fs.readFileSync('/etc/letsencrypt/live/cbd.usask.ca/privkey.pem'),
@@ -12,7 +13,7 @@ var server = https.createServer({
 }, app);
 
 
-server.listen(8080);
+server.listen(8082);
 
 // will create a socket server
 var io = require('socket.io').listen(server);

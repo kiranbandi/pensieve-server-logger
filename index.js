@@ -1,18 +1,21 @@
 const recordService = require('./records/record.service');
 const winston = require('./helpers/winston');
-const shortid = require('shortid');
+var app = require('express')();
+var https = require('https');
 
-// will create a socket server on port 8080
-var io = require('socket.io')(8080);
+var server = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/cbd.usask.ca/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/cbd.usask.ca/cert.pem'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/cbd.usask.ca/chain.pem'),
+    requestCert: false,
+    rejectUnauthorized: false
+}, app);
 
-const recordStoreReference = {
-    userID: '',
-    timestamp: '',
-    source: '',
-    startTime: '',
-    endTime: '',
-    data: '',
-};
+
+server.listen(8080);
+
+// will create a socket server
+var io = require('socket.io').listen(server);
 
 //  This is a temporary store , so when someone connects 
 // we store their data here 

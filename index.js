@@ -21,22 +21,25 @@ var users = {};
 
 // When a user is connected 
 io.on('connection', function(socket) {
-
-    debugger;
-
-
+    // not an elegant soultion but
+    // access to userID is scoped out for every connection 
+    // so would work even for multiple users
+    var userID = socket.id;
+    // create a key for user
+    users[userID] = [];
+    // log
+    winston.info(userID + 'is connected now');
     // when a user send a message 
-    socket.on('chat message', function(msg) {
-
-        // send message back to user 
-        io.emit('chat message', msg);
+    socket.on('jbrowse', function(msg) {
+        users[userID].push(msg.payload);
     });
-
     //  when a user disconnects from the socket 
     socket.on('disconnect', function() {
-        io.emit('user disconnected');
+        winston.info(userID + 'is disconnected now');
+        recordService.storeRecord({ userID, 'data': users[userID] })
+            .then(() => {
+                delete users[userID];
+                winston.info('data stored for ' + userID);
+            });
     });
-
-
-
 });
